@@ -1,0 +1,12 @@
+pymupdf
+langchain
+langchain-core
+langchain-text-splitters
+langchain-nvidia-ai-endpoints
+langchain-qdrant
+qdrant-client
+python-dotenv
+pandas
+requests
+jupyter
+gradio  # opcional, solo para la interfaz (Parte 7)
