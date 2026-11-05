@@ -6,10 +6,10 @@ Proyecto final de **SI3003 Inteligencia Artificial**, Universidad EAFIT, en la *
 
 ## Integrantes
 
-- _Nombre 1_
-- _Nombre 2_
-- _Nombre 3_
-- _Nombre 4_
+- Sara Castrillón Sánchez
+- Juan Sebastián Cortes Montoya
+- Sebastián Zapata
+- Jerónimo Restrepo
 
 ## Problema
 
