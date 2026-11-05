@@ -32,6 +32,25 @@ Elegimos **RAG** porque el conocimiento ya existe en documentos escritos y la ta
 
 Los dos son públicos y se descargaron el 5 de noviembre de 2026 desde la [página de reglamentos de EAFIT](https://www.eafit.edu.co/institucional/reglamentos/reglamentos).
 
+## Arquitectura
+
+```mermaid
+flowchart LR
+    subgraph P[1. Preparación de los documentos]
+        A[2 PDF de reglamentos] --> B[PyMuPDF<br/>texto por página]
+        B --> C[Corte por artículo<br/>+ fragmentos de 1000]
+        C --> D[Embeddings<br/>nemotron-3-embed-1b]
+        D --> E[(Qdrant)]
+    end
+    subgraph R[2. Respuesta a una pregunta]
+        F[Pregunta] --> G[Recuperar top 5<br/>con similitud]
+        E --> G
+        G -->|ninguno ≥ 0.25| H[No hay información]
+        G -->|≥ 0.25| I[LLM nemotron-3.5-super<br/>prompt: solo contexto y citar]
+        I --> J[Respuesta + fuentes<br/>documento · artículo · página]
+    end
+```
+
 ## Herramientas
 
 | Etapa | Herramienta |
