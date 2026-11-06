@@ -160,10 +160,27 @@ La pregunta del caso 4 necesitaba los dos reglamentos, pero **cuatro de los cinc
 
 Hubo además un problema de generación. El fragmento con la regla completa (*primer semestre no puede retirar materias; 90 % antes de iniciar la 2.ª semana; 75 % antes de concluirla*) sí estaba en el contexto, pero el modelo solo usó el 75 %. Además añadió una duda innecesaria sobre "exactamente durante la segunda semana". Aun así, la respuesta no inventó nada: todo lo que afirmó está respaldado.
 
-**Mejoras propuestas:**
-1. **Diversificar la recuperación con MMR** (*Maximal Marginal Relevance*, disponible en Qdrant/LangChain) o limitar a dos fragmentos por artículo. Así entran artículos y documentos distintos en vez de varias partes del mismo.
-2. **Búsqueda híbrida (vectorial + BM25)**, como se vio en clase, para términos exactos como "Artículo 52", "matrícula condicional" o "UMES".
-3. **Seguir las referencias internas:** el Art. 50 dice que la devolución se rige por el Reglamento Económico. Si se detecta esa referencia, se podría recuperar también el artículo citado.
+### Prueba de una mejora: recuperación diversificada con MMR (Parte 6b)
+
+Probamos **MMR** (*Maximal Marginal Relevance*), que elige fragmentos parecidos a la pregunta pero distintos entre sí. Usamos `fetch_k = 20` candidatos y `lambda = 0.5`, y repetimos el caso 4:
+
+| | Búsqueda normal (similitud) | Búsqueda MMR |
+|---|---|---|
+| Fragmentos recuperados | Económico Art. 17 (×4), Económico Art. 3 | Económico Art. 17, Art. 11 y Art. 3; Académico Art. 63 y Art. 51 |
+| Documentos distintos | 1 | 2 |
+| Artículos distintos | 2 | 5 |
+| Respuesta | Solo el 75 %, con una duda innecesaria sobre "exactamente la segunda semana" | La regla completa: 90 % antes de iniciar la 2.ª semana, 75 % antes de terminarla y nada desde la 3.ª, sin dudas innecesarias |
+| ¿Recuperó el Académico Art. 50? | No | No |
+| ¿Mencionó la restricción de primer semestre? | No | No |
+
+**Resultado:** MMR cumplió su objetivo de diversificar: pasó de un documento a dos y de 2 artículos a 5. La respuesta también mejoró, porque el fragmento central del Art. 17 ya no compite con otros tres pedazos casi iguales del mismo artículo. Pero **no garantiza traer el artículo correcto**: los cupos liberados se llenaron con artículos relacionados (Art. 51 y 63 del académico) y no con el Art. 50. Además, la restricción de primer semestre siguió omitida aunque estaba en el contexto, lo que confirma que parte del problema es de generación y no solo de recuperación.
+
+Hay que tomar el resultado con cautela: es una sola pregunta y el LLM tiene algo de variación entre ejecuciones (`temperature = 0.1`), así que la mejora de la respuesta no se puede atribuir solo a MMR.
+
+**Siguientes mejoras propuestas:**
+1. **Búsqueda híbrida (vectorial + BM25)**, como se vio en clase. Términos exactos como "cancelación de créditos", "Artículo 52", "matrícula condicional" o "UMES" favorecerían el artículo que los contiene.
+2. **Seguir las referencias internas:** el Art. 50 dice que la devolución se rige por el Reglamento Económico. Si se detecta esa referencia, se recupera también el artículo citado, y en sentido inverso.
+3. **Descomponer preguntas compuestas:** separar "¿puedo cancelar?" y "¿me devuelven el dinero?" en dos búsquedas y unir los resultados.
 
 ### Otras limitaciones
 
